@@ -361,7 +361,7 @@
                         <div class="pattern-card">
                             <h4>Date Pattern</h4>
                             <div class="label-info" style="margin-bottom: 10px;">
-                                Extracts: month, day, year (if applicable)
+                                Extracts: game, day, month, year (if applicable)
                             </div>
                             <div style="position: relative;">
                                 <div class="output-box" id="dateOutput"></div>
@@ -432,11 +432,13 @@
                 // Teams
                 hasVs: /\s+vs\s+/i.test(sample),
                 hasAt: /\s+at\s+/i.test(sample),
+                hasAtSymbol: /\s+@\s+/.test(sample),
                 
                 // Date formats
                 hasMonthName: /(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{1,2}/i.test(sample),
                 hasDayNumber: /\|\s*\d{1,2}\s*-/.test(sample) || /:\s*\d{1,2}\s*-/.test(sample),
                 hasFullDate: /\d{1,2}\/\d{1,2}\/\d{2,4}/.test(sample),
+                hasGameNumber: /\|\s*\d{1,2}\s*-/.test(sample) && !/(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.test(sample),
                 
                 // Time formats
                 has24Hour: /\d{1,2}:\d{2}(?!\s*(?:am|pm))/i.test(sample),
@@ -456,8 +458,8 @@
                 analysis.league = leagueMatch[1];
             }
 
-            // Check for multi-word teams
-            const teamSplit = sample.split(/\s+(?:at|vs)\s+/i);
+            // Check for multi-word teams - now supports @, at, and vs
+            const teamSplit = sample.split(/\s+(?:at|vs|@)\s+/i);
             if (teamSplit.length >= 2) {
                 const team1Part = teamSplit[0].split(/\d{1,2}(?::\d{2})?(?:am|pm)?/i).pop().trim();
                 const team2Part = teamSplit[1].trim();
@@ -481,7 +483,7 @@
                 pattern += '(?<league>\\w+)?';
             }
             
-            // Everything before teams (non-greedy)
+            // Everything before teams (non-greedy) - captures game number or date or other content
             pattern += '.*?';
             
             // Team 1
@@ -493,8 +495,14 @@
             
             pattern += '\\s+';
             
-            // Team separator
-            if (analysis.hasVs && analysis.hasAt) {
+            // Team separator - now supports @, at, and vs
+            if (analysis.hasAtSymbol) {
+                if (analysis.hasVs || analysis.hasAt) {
+                    pattern += '(?:at|vs|@)';
+                } else {
+                    pattern += '@';
+                }
+            } else if (analysis.hasVs && analysis.hasAt) {
                 pattern += '(?:at|vs)';
             } else if (analysis.hasVs) {
                 pattern += 'vs';
@@ -535,8 +543,12 @@
             } else if (analysis.hasFullDate) {
                 // Numeric format: 10/17/2025
                 return '(?<month>\\d{1,2})/(?<day>\\d{1,2})/(?<year>\\d{2,4})';
+            } else if (analysis.hasGameNumber) {
+                // Game number format: | 03 - (not a date, it's game #)
+                // Return pattern that captures it as game, not day
+                return '(?<game>\\d{1,2})';
             } else if (analysis.hasDayNumber) {
-                // Just day number: 02
+                // Day number only: 02
                 return '(?<day>\\d{1,2})';
             } else {
                 // Default: try to capture month and day
