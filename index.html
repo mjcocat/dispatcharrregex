@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Game Parser - Regex Testing Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .regex-input {
+            background-color: #f8f9fa;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+            transform: translateY(-2px);
+        }
+
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .results h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .result-item h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .result-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 120px;
+        }
+
+        .result-value {
+            color: #333;
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        .warning {
+            color: #ffc107;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .examples {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .examples h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .example-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .example-item:hover {
+            background: #f8f9fa;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+
+        code {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Sports Game Parser</h1>
+            <p>Test and validate regex patterns for parsing sports game strings</p>
+        </div>
+
+        <div class="content">
+            <!-- Sample String Section -->
+            <div class="section">
+                <div class="section-title">📝 Sample String</div>
+                <div class="form-group">
+                    <label for="sampleString">Enter your sports game string:</label>
+                    <input type="text" id="sampleString" value="NHL | 02 - 3pm Oilers at Red Wings" 
+                           placeholder="e.g., NHL | 02 - 3pm Oilers at Red Wings">
+                </div>
+                
+                <div class="examples">
+                    <h4>Click to load examples:</h4>
+                    <div class="example-item" onclick="loadExample(0)">NHL | 02 - 3pm Oilers at Red Wings</div>
+                    <div class="example-item" onclick="loadExample(1)">NBA | December 15 - 7:30pm Lakers vs Celtics</div>
+                    <div class="example-item" onclick="loadExample(2)">MLB | July 04 - 13:30 Yankees at Red Sox</div>
+                    <div class="example-item" onclick="loadExample(3)">NFL | Jan 20 - 8:15pm Golden State Warriors vs Los Angeles Lakers</div>
+                </div>
+            </div>
+
+            <!-- Regex Patterns Section -->
+            <div class="section">
+                <div class="section-title">🔧 Regex Patterns</div>
+                
+                <div class="form-group">
+                    <label for="titleRegex">Title Regex (extracts: league, date, time, team1, team2):</label>
+                    <textarea id="titleRegex" class="regex-input" rows="3">(?P<league>[A-Z]+)\s*\|\s*(?P<date>\d{2})\s*-\s*(?P<time>.*?)\s+(?P<team1>\w+)\s+at\s+(?P<team2>\w+)</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeRegex">Time Regex (extracts: hour, minute, ampm):</label>
+                    <textarea id="timeRegex" class="regex-input" rows="2">(?P<hour>\d{1,2})(?::(?P<minute>\d{2}))?\s?(?P<ampm>(?i:AM|PM))</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="dateRegex">Date Regex (extracts: month, day):</label>
+                    <textarea id="dateRegex" class="regex-input" rows="2">(?P<month>\w+)\s+(?P<day>\d+)</textarea>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="section">
+                <div class="button-group">
+                    <button class="btn-primary" onclick="testParse()">
+                        <span>▶️</span> Test Parse
+                    </button>
+                    <button class="btn-success" onclick="validatePatterns()">
+                        <span>✓</span> Validate Patterns
+                    </button>
+                    <button class="btn-info" onclick="generateSuggestions()">
+                        <span>💡</span> Get Suggestions
+                    </button>
+                    <button class="btn-secondary" onclick="exportConfig()">
+                        <span>📥</span> Export Config
+                    </button>
+                    <button class="btn-secondary" onclick="resetToDefaults()">
+                        <span>🔄</span> Reset to Defaults
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="hidden">
+                <div class="results">
+                    <h3>📊 Parse Results</h3>
+                    <div id="resultsContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Example configurations
+        const examples = [
+            {
+                sample: "NHL | 02 - 3pm Oilers at Red Wings",
+                title: "(?P<league>[A-Z]+)\\s*\\|\\s*(?P<date>\\d{2})\\s*-\\s*(?P<time>.*?)\\s+(?P<team1>\\w+)\\s+at\\s+(?P<team2>\\w+)",
+                time: "(?P<hour>\\d{1,2})(?::(?P<minute>\\d{2}))?\\s?(?P<ampm>(?i:AM|PM))",
+                date: "(?P<month>\\w+)\\s+(?P<day>\\d+)"
+            },
+            {
+                sample: "NBA | December 15 - 7:30pm Lakers vs Celtics",
+                title: "(?P<league>[A-Z]+)\\s*\\|\\s*(?P<date>\\w+\\s+\\d+)\\s*-\\s*(?P<time>.*?)\\s+(?P<team1>\\w+)\\s+(?:at|vs)\\s+(?P<team2>\\w+)",
+                time: "(?P<hour>\\d{1,2})(?::(?P<minute>\\d{2}))?\\s?(?P<ampm>(?i:AM|PM))",
+                date: "(?P<month>\\w+)\\s+(?P<day>\\d+)"
+            },
+            {
+                sample: "MLB | July 04 - 13:30 Yankees at Red Sox",
+                title: "(?P<league>[A-Z]+)\\s*\\|\\s*(?P<date>\\w+\\s+\\d+)\\s*-\\s*(?P<time>.*?)\\s+(?P<team1>\\w+)\\s+at\\s+(?P<team2>\\w+)",
+                time: "(?P<hour>\\d{1,2}):(?P<minute>\\d{2})",
+                date: "(?P<month>\\w+)\\s+(?P<day>\\d+)"
+            },
+            {
+                sample: "NFL | Jan 20 - 8:15pm Golden State Warriors vs Los Angeles Lakers",
+                title: "(?P<league>[A-Z]+)\\s*\\|\\s*(?P<date>\\w+\\s+\\d+)\\s*-\\s*(?P<time>.*?)\\s+(?P<team1>[\\w\\s]+?)\\s+(?:at|vs)\\s+(?P<team2>[\\w\\s]+?)$",
+                time: "(?P<hour>\\d{1,2})(?::(?P<minute>\\d{2}))?\\s?(?P<ampm>(?i:AM|PM))",
+                date: "(?P<month>\\w+)\\s+(?P<day>\\d+)"
+            }
+        ];
+
+        function loadExample(index) {
+            const example = examples[index];
+            document.getElementById('sampleString').value = example.sample;
+            document.getElementById('titleRegex').value = example.title;
+            document.getElementById('timeRegex').value = example.time;
+            document.getElementById('dateRegex').value = example.date;
+            
+            showAlert('Example loaded! Click "Test Parse" to see results.', 'success');
+        }
+
+        function testParse() {
+            const sample = document.getElementById('sampleString').value;
+            const titleRegex = document.getElementById('titleRegex').value;
+            const timeRegex = document.getElementById('timeRegex').value;
+            const dateRegex = document.getElementById('dateRegex').value;
+
+            if (!sample) {
+                showAlert('Please enter a sample string.', 'error');
+                return;
+            }
+
+            let results = {
+                input: sample,
+                titleMatch: null,
+                timeMatch: null,
+                dateMatch: null,
+                errors: []
+            };
+
+            // Parse title
+            try {
+                const titlePattern = convertPythonRegex(titleRegex);
+                const titleMatch = sample.match(titlePattern);
+                if (titleMatch && titleMatch.groups) {
+                    results.titleMatch = titleMatch.groups;
+                } else {
+                    results.errors.push('Title pattern did not match');
+                }
+            } catch (e) {
+                results.errors.push('Title regex error: ' + e.message);
+            }
+
+            // Parse time
+            if (results.titleMatch && results.titleMatch.time) {
+                try {
+                    const timePattern = convertPythonRegex(timeRegex);
+                    const timeMatch = results.titleMatch.time.match(timePattern);
+                    if (timeMatch && timeMatch.groups) {
+                        results.timeMatch = timeMatch.groups;
+                        // Default minute to 00 if not present
+                        if (!results.timeMatch.minute) {
+                            results.timeMatch.minute = '00';
+                        }
+                    } else {
+                        results.errors.push('Time pattern did not match');
+                    }
+                } catch (e) {
+                    results.errors.push('Time regex error: ' + e.message);
+                }
+            }
+
+            // Parse date
+            try {
+                const datePattern = convertPythonRegex(dateRegex);
+                const dateMatch = sample.match(datePattern);
+                if (dateMatch && dateMatch.groups) {
+                    results.dateMatch = dateMatch.groups;
+                }
+            } catch (e) {
+                results.errors.push('Date regex error: ' + e.message);
+            }
+
+            displayResults(results);
+        }
+
+        function convertPythonRegex(pythonRegex) {
+            // Convert Python named groups (?P<n>...) to JavaScript (?<n>...)
+            return new RegExp(pythonRegex.replace(/\(\?P</g, '(?<'), 'i');
+        }
+
+        function displayResults(results) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let html = '';
+
+            html += `<div class="alert alert-info"><strong>Input:</strong> ${escapeHtml(results.input)}</div>`;
+
+            if (results.errors.length > 0) {
+                html += '<div class="alert alert-error"><strong>Errors:</strong><ul style="margin-top: 10px; padding-left: 20px;">';
+                results.errors.forEach(error => {
+                    html += `<li>${escapeHtml(error)}</li>`;
+                });
+                html += '</ul></div>';
+            }
+
+            // Title match results
+            if (results.titleMatch) {
+                html += '<div class="result-item">';
+                html += '<h4 class="success">✓ Title Pattern Matched</h4>';
+                Object.entries(results.titleMatch).forEach(([key, value]) => {
+                    html += `<div class="result-row">
+                        <div class="result-label">${capitalize(key)}:</div>
+                        <div class="result-value">${escapeHtml(value)}</div>
+                    </div>`;
+                });
+                html += '</div>';
+            } else if (!results.errors.some(e => e.includes('Title'))) {
+                html += '<div class="result-item"><h4 class="error">✗ Title Pattern: No match found</h4></div>';
+            }
+
+            // Time match results
+            if (results.timeMatch) {
+                html += '<div class="result-item">';
+                html += '<h4 class="success">✓ Time Pattern Matched</h4>';
+                Object.entries(results.timeMatch).forEach(([key, value]) => {
+                    html += `<div class="result-row">
+                        <div class="result-label">${capitalize(key)}:</div>
+                        <div class="result-value">${escapeHtml(value)}</div>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // Date match results
+            if (results.dateMatch) {
+                html += '<div class="result-item">';
+                html += '<h4 class="success">✓ Date Pattern Matched</h4>';
+                Object.entries(results.dateMatch).forEach(([key, value]) => {
+                    html += `<div class="result-row">
+                        <div class="result-label">${capitalize(key)}:</div>
+                        <div class="result-value">${escapeHtml(value)}</div>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            resultsContent.innerHTML = html;
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function validatePatterns() {
+            const titleRegex = document.getElementById('titleRegex').value;
+            const timeRegex = document.getElementById('timeRegex').value;
+            const dateRegex = document.getElementById('dateRegex').value;
+
+            let results = [];
+            let allValid = true;
+
+            // Validate title regex
+            try {
+                convertPythonRegex(titleRegex);
+                results.push({ name: 'Title Regex', status: 'valid', groups: extractGroups(titleRegex) });
+            } catch (e) {
+                results.push({ name: 'Title Regex', status: 'invalid', error: e.message });
+                allValid = false;
+            }
+
+            // Validate time regex
+            try {
+                convertPythonRegex(timeRegex);
+                results.push({ name: 'Time Regex', status: 'valid', groups: extractGroups(timeRegex) });
+            } catch (e) {
+                results.push({ name: 'Time Regex', status: 'invalid', error: e.message });
+                allValid = false;
+            }
+
+            // Validate date regex
+            try {
+                convertPythonRegex(dateRegex);
+                results.push({ name: 'Date Regex', status: 'valid', groups: extractGroups(dateRegex) });
+            } catch (e) {
+                results.push({ name: 'Date Regex', status: 'invalid', error: e.message });
+                allValid = false;
+            }
+
+            displayValidationResults(results, allValid);
+        }
+
+        function extractGroups(regex) {
+            const matches = regex.matchAll(/\(\?P?<(\w+)>/g);
+            return Array.from(matches, m => m[1]);
+        }
+
+        function displayValidationResults(results, allValid) {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let html = '<h3>🔍 Pattern Validation</h3>';
+
+            results.forEach(result => {
+                html += '<div class="result-item">';
+                if (result.status === 'valid') {
+                    html += `<h4 class="success">✓ ${result.name}: Valid</h4>`;
+                    if (result.groups.length > 0) {
+                        html += `<div class="result-row">
+                            <div class="result-label">Named Groups:</div>
+                            <div class="result-value">${result.groups.join(', ')}</div>
+                        </div>`;
+                    } else {
+                        html += `<div class="result-row">
+                            <div class="result-label warning">⚠ No named groups found</div>
+                        </div>`;
+                    }
+                } else {
+                    html += `<h4 class="error">✗ ${result.name}: Invalid</h4>`;
+                    html += `<div class="result-row">
+                        <div class="result-label">Error:</div>
+                        <div class="result-value error">${escapeHtml(result.error)}</div>
+                    </div>`;
+                }
+                html += '</div>';
+            });
+
+            if (allValid) {
+                html = '<div class="alert alert-success">All patterns are valid! ✓</div>' + html;
+            } else {
+                html = '<div class="alert alert-error">Some patterns have errors. Please fix them.</div>' + html;
+            }
+
+            resultsContent.innerHTML = html;
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function generateSuggestions() {
+            const sample = document.getElementById('sampleString').value;
+            
+            if (!sample) {
+                showAlert('Please enter a sample string first.', 'error');
+                return;
+            }
+
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let html = '<h3>💡 Pattern Suggestions</h3>';
+            html += `<div class="alert alert-info"><strong>Sample:</strong> ${escapeHtml(sample)}</div>`;
+
+            html += '<div class="result-item">';
+            html += '<h4>Title Pattern Suggestions:</h4>';
+            html += '<p style="margin: 10px 0;">For standard format with pipe separator:</p>';
+            html += '<pre>(?P&lt;league&gt;[A-Z]+)\\s*\\|\\s*(?P&lt;date&gt;\\w+\\s+\\d+|\\d{2})\\s*-\\s*(?P&lt;time&gt;.*?)\\s+(?P&lt;team1&gt;\\w+)\\s+(?:at|vs)\\s+(?P&lt;team2&gt;\\w+)</pre>';
+            html += '<p style="margin: 10px 0;">For multi-word team names:</p>';
+            html += '<pre>(?P&lt;league&gt;[A-Z]+)\\s*\\|\\s*(?P&lt;date&gt;\\w+\\s+\\d+)\\s*-\\s*(?P&lt;time&gt;.*?)\\s+(?P&lt;team1&gt;[\\w\\s]+?)\\s+(?:at|vs)\\s+(?P&lt;team2&gt;[\\w\\s]+?)$</pre>';
+            html += '</div>';
+
+            html += '<div class="result-item">';
+            html += '<h4>💡 Tips:</h4>';
+            html += '<ul style="padding-left: 20px; margin-top: 10px; line-height: 1.8;">';
+            html += '<li>Use <code>(?P&lt;n&gt;...)</code> for named groups</li>';
+            html += '<li>Use <code>\\s*</code> for optional whitespace</li>';
+            html += '<li>Use <code>\\d</code> for digits, <code>\\w</code> for word characters</li>';
+            html += '<li>Use <code>(?:at|vs)</code> to match either "at" or "vs"</li>';
+            html += '<li>Test with "Test Parse" after updating patterns</li>';
+            html += '</ul>';
+            html += '</div>';
+
+            resultsContent.innerHTML = html;
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function exportConfig() {
+            const config = {
+                sports_game_parser: {
+                    sample_string: document.getElementById('sampleString').value,
+                    patterns: {
+                        title_regex: document.getElementById('titleRegex').value,
+                        time_regex: document.getElementById('timeRegex').value,
+                        date_regex: document.getElementById('dateRegex').value
+                    },
+                    named_groups: {
+                        title_regex: extractGroups(document.getElementById('titleRegex').value),
+                        time_regex: extractGroups(document.getElementById('timeRegex').value),
+                        date_regex: extractGroups(document.getElementById('dateRegex').value)
+                    }
+                }
+            };
+
+            const json = JSON.stringify(config, null, 2);
+            
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let html = '<h3>📥 Exported Configuration</h3>';
+            html += '<div class="alert alert-success">Configuration exported! Copy the JSON below:</div>';
+            html += '<div class="result-item">';
+            html += '<button class="btn-info" onclick="copyToClipboard()" style="margin-bottom: 15px;">📋 Copy to Clipboard</button>';
+            html += `<pre id="exportedJson">${escapeHtml(json)}</pre>`;
+            html += '</div>';
+
+            resultsContent.innerHTML = html;
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('exportedJson').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('Copied to clipboard!', 'success');
+            }).catch(() => {
+                showAlert('Failed to copy to clipboard', 'error');
+            });
+        }
+
+        function resetToDefaults() {
+            loadExample(0);
+            showAlert('Reset to default values!', 'success');
+        }
+
+        function showAlert(message, type) {
+            const alertClass = type === 'error' ? 'alert-error' : 
+                              type === 'info' ? 'alert-info' : 'alert-success';
+            
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass}`;
+            alert.textContent = message;
+            alert.style.position = 'fixed';
+            alert.style.top = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '9999';
+            alert.style.maxWidth = '400px';
+            alert.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.3s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            }, 3000);
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Load default example on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Sports Game Parser loaded and ready!');
+        });
+    </script>
+</body>
+</html>
