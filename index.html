@@ -78,6 +78,14 @@
             letter-spacing: 0.5px;
         }
 
+        .label-info {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: normal;
+            text-transform: none;
+            margin-top: 4px;
+        }
+
         input[type="text"],
         textarea {
             width: 100%;
@@ -100,7 +108,7 @@
 
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 80px;
         }
 
         .output-box {
@@ -108,11 +116,13 @@
             border: 1px solid #374151;
             border-radius: 6px;
             padding: 16px;
+            padding-right: 80px;
             font-family: 'Monaco', 'Courier New', monospace;
             font-size: 13px;
             color: #10b981;
             word-break: break-all;
             position: relative;
+            min-height: 60px;
         }
 
         .copy-button {
@@ -183,50 +193,6 @@
             flex: 1;
         }
 
-        .results {
-            margin-top: 20px;
-        }
-
-        .result-item {
-            margin-bottom: 20px;
-            padding: 20px;
-            background: #1f2937;
-            border-radius: 6px;
-            border-left: 4px solid #10b981;
-        }
-
-        .result-item h4 {
-            color: #10b981;
-            margin-bottom: 12px;
-            font-size: 15px;
-        }
-
-        .result-row {
-            display: flex;
-            padding: 10px 0;
-            border-bottom: 1px solid #374151;
-        }
-
-        .result-row:last-child {
-            border-bottom: none;
-        }
-
-        .result-label {
-            font-weight: 600;
-            color: #9ca3af;
-            min-width: 120px;
-            font-size: 13px;
-        }
-
-        .result-value {
-            color: #e4e6eb;
-            font-family: 'Monaco', 'Courier New', monospace;
-            background: #374151;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-
         .alert {
             padding: 12px 16px;
             margin-bottom: 20px;
@@ -253,6 +219,12 @@
             color: #dbeafe;
         }
 
+        .alert-warning {
+            background: #78350f;
+            border-color: #f59e0b;
+            color: #fde68a;
+        }
+
         .success {
             color: #10b981;
         }
@@ -271,16 +243,24 @@
             }
         }
 
-        .grid-2 {
+        .pattern-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
+            margin-top: 20px;
         }
 
-        @media (max-width: 1024px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
+        .pattern-card {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #10b981;
+        }
+
+        .pattern-card h4 {
+            color: #10b981;
+            margin-bottom: 15px;
+            font-size: 15px;
         }
 
         .test-results {
@@ -296,11 +276,29 @@
             font-size: 14px;
         }
 
-        code {
-            background: #374151;
-            padding: 2px 6px;
-            border-radius: 3px;
+        .result-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #374151;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #9ca3af;
+            min-width: 100px;
+            font-size: 12px;
+        }
+
+        .result-value {
+            color: #e4e6eb;
             font-family: 'Monaco', 'Courier New', monospace;
+            background: #374151;
+            padding: 4px 10px;
+            border-radius: 4px;
             font-size: 12px;
         }
     </style>
@@ -309,7 +307,7 @@
     <div class="container">
         <div class="header">
             <h1>⚽ Sports Game Regex Generator</h1>
-            <p>Generate Dispatcharr-compatible regex patterns from your game strings</p>
+            <p>Generate Title, Time, and Date patterns for Dispatcharr</p>
         </div>
 
         <div class="main-content">
@@ -331,38 +329,74 @@
 
             <!-- Output Section -->
             <div id="outputSection" class="hidden">
-                <div class="grid-2">
-                    <!-- Generated Regex -->
-                    <div class="section">
-                        <div class="section-title">Generated Regex</div>
-                        <div class="form-group">
-                            <label>Title Pattern (Main Regex)</label>
+                <div class="section">
+                    <div class="section-title">Generated Patterns</div>
+                    
+                    <div class="pattern-grid">
+                        <!-- Title Pattern -->
+                        <div class="pattern-card">
+                            <h4>Title Pattern *</h4>
+                            <div class="label-info" style="margin-bottom: 10px;">
+                                Extracts: league, team1, team2
+                            </div>
                             <div style="position: relative;">
                                 <div class="output-box" id="titleOutput"></div>
                                 <button class="copy-button" onclick="copyToClipboard('titleOutput')">📋 Copy</button>
                             </div>
                         </div>
+
+                        <!-- Time Pattern -->
+                        <div class="pattern-card">
+                            <h4>Time Pattern</h4>
+                            <div class="label-info" style="margin-bottom: 10px;">
+                                Extracts: hour, minute, ampm (if applicable)
+                            </div>
+                            <div style="position: relative;">
+                                <div class="output-box" id="timeOutput"></div>
+                                <button class="copy-button" onclick="copyToClipboard('timeOutput')">📋 Copy</button>
+                            </div>
+                        </div>
+
+                        <!-- Date Pattern -->
+                        <div class="pattern-card">
+                            <h4>Date Pattern</h4>
+                            <div class="label-info" style="margin-bottom: 10px;">
+                                Extracts: month, day, year (if applicable)
+                            </div>
+                            <div style="position: relative;">
+                                <div class="output-box" id="dateOutput"></div>
+                                <button class="copy-button" onclick="copyToClipboard('dateOutput')">📋 Copy</button>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Test Results -->
-                    <div class="section">
-                        <div class="section-title">Test Results</div>
-                        <div id="testResults"></div>
-                    </div>
+                    <div id="testResults" class="test-results"></div>
                 </div>
             </div>
 
             <!-- Manual Test Section -->
             <div class="section">
-                <div class="section-title">Test Custom Regex (Optional)</div>
+                <div class="section-title">Test Your Own Patterns (Optional)</div>
+                
                 <div class="form-group">
-                    <label>Your Custom Regex Pattern</label>
-                    <textarea id="customRegex" placeholder="Paste your regex here to test it..."></textarea>
+                    <label>Title Pattern</label>
+                    <textarea id="customTitle" placeholder="Paste your title regex here..."></textarea>
                 </div>
-                <button class="btn-secondary" onclick="testCustomRegex()">
-                    ▶️ Test Custom Regex
+
+                <div class="form-group">
+                    <label>Time Pattern</label>
+                    <textarea id="customTime" placeholder="Paste your time regex here..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Date Pattern</label>
+                    <textarea id="customDate" placeholder="Paste your date regex here..."></textarea>
+                </div>
+
+                <button class="btn-secondary" onclick="testCustomPatterns()">
+                    ▶️ Test Custom Patterns
                 </button>
-                <div id="customTestResults" class="hidden results"></div>
+                <div id="customTestResults" class="hidden"></div>
             </div>
         </div>
     </div>
@@ -379,127 +413,198 @@
             // Analyze the sample string
             const analysis = analyzeString(sample);
             
-            // Generate Dispatcharr-compatible regex (JavaScript style)
-            const regex = buildRegex(analysis);
+            // Generate three separate patterns
+            const titlePattern = buildTitlePattern(analysis, sample);
+            const timePattern = buildTimePattern(analysis, sample);
+            const datePattern = buildDatePattern(analysis, sample);
             
-            // Display results
-            displayResults(regex, sample, analysis);
+            // Display and test results
+            displayResults(titlePattern, timePattern, datePattern, sample);
         }
 
         function analyzeString(sample) {
             const analysis = {
+                // Separators
                 hasPipe: sample.includes('|'),
-                hasColon: sample.includes(':') && !sample.includes('|'),
+                hasColon: /:\s*\d/.test(sample) && !sample.includes('|'), // colon followed by digit
+                hasDash: sample.includes('-'),
+                
+                // Teams
                 hasVs: /\s+vs\s+/i.test(sample),
                 hasAt: /\s+at\s+/i.test(sample),
-                hasMonthName: /[A-Za-z]{3,}\s+\d{1,2}/.test(sample),
-                has24Hour: /\d{1,2}:\d{2}(?!\s*[ap]m)/i.test(sample),
-                hasAMPM: /\d{1,2}(?::\d{2})?\s*[ap]m/i.test(sample),
-                hasMultiWordTeams: false
+                
+                // Date formats
+                hasMonthName: /(?:january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{1,2}/i.test(sample),
+                hasDayNumber: /\|\s*\d{1,2}\s*-/.test(sample) || /:\s*\d{1,2}\s*-/.test(sample),
+                hasFullDate: /\d{1,2}\/\d{1,2}\/\d{2,4}/.test(sample),
+                
+                // Time formats
+                has24Hour: /\d{1,2}:\d{2}(?!\s*(?:am|pm))/i.test(sample),
+                hasAMPM: /\d{1,2}(?::\d{2})?\s*(?:am|pm)/i.test(sample),
+                hasTimeWithColon: /\d{1,2}:\d{2}/.test(sample),
+                
+                // Multi-word detection
+                hasMultiWordTeams: false,
+                
+                // League detection
+                league: null
             };
 
-            // Check for potential multi-word teams
-            const parts = sample.split(/\s+(?:at|vs)\s+/i);
-            if (parts.length >= 2) {
-                const lastPart = parts[1].trim();
-                analysis.hasMultiWordTeams = lastPart.split(/\s+/).length > 1;
+            // Detect league
+            const leagueMatch = sample.match(/^([A-Z]+)/);
+            if (leagueMatch) {
+                analysis.league = leagueMatch[1];
+            }
+
+            // Check for multi-word teams
+            const teamSplit = sample.split(/\s+(?:at|vs)\s+/i);
+            if (teamSplit.length >= 2) {
+                const team1Part = teamSplit[0].split(/\d{1,2}(?::\d{2})?(?:am|pm)?/i).pop().trim();
+                const team2Part = teamSplit[1].trim();
+                
+                analysis.hasMultiWordTeams = 
+                    team1Part.split(/\s+/).length > 1 || 
+                    team2Part.split(/\s+/).length > 1;
             }
 
             return analysis;
         }
 
-        function buildRegex(analysis) {
-            let regex = '^';
+        function buildTitlePattern(analysis, sample) {
+            // Build pattern to match everything and extract teams and league
+            let pattern = '';
             
-            // League pattern
-            regex += '(?<league>\\w+)';
-            
-            // Separator
-            if (analysis.hasPipe) {
-                regex += '\\s*\\|\\s*';
-            } else if (analysis.hasColon) {
-                regex += '\\s*:\\s*';
+            // League at start
+            if (analysis.league) {
+                pattern += '(?<league>\\w+)';
             } else {
-                regex += '\\s+';
+                pattern += '(?<league>\\w+)?';
             }
             
-            // Date pattern
-            if (analysis.hasMonthName) {
-                regex += '(?<date>\\w+\\s+\\d{1,2})';
-            } else {
-                regex += '(?<game>\\d+)';
-            }
+            // Everything before teams (non-greedy)
+            pattern += '.*?';
             
-            regex += '\\s*-\\s*';
-            
-            // Time pattern with capture groups
-            if (analysis.has24Hour) {
-                regex += '(?:(?<hour>\\d{1,2}):(?<minute>\\d{2}))';
-            } else if (analysis.hasAMPM) {
-                regex += '(?:(?<hour>\\d{1,2}):?(?<minute>\\d{0,2})?(?<ampm>am|pm))';
-            } else {
-                regex += '(?:(?<hour>\\d{1,2}):?(?<minute>\\d{0,2})?(?<ampm>am|pm)?)';
-            }
-            
-            regex += '\\s+';
-            
-            // Team pattern
+            // Team 1
             if (analysis.hasMultiWordTeams) {
-                regex += '(?<team1>.*?)';
+                pattern += '(?<team1>[\\w\\s]+?)';
             } else {
-                regex += '(?<team1>\\w+)';
+                pattern += '(?<team1>\\w+)';
             }
             
-            regex += '\\s+';
+            pattern += '\\s+';
             
             // Team separator
             if (analysis.hasVs && analysis.hasAt) {
-                regex += '(?:at|vs)';
+                pattern += '(?:at|vs)';
             } else if (analysis.hasVs) {
-                regex += 'vs';
+                pattern += 'vs';
             } else {
-                regex += 'at';
+                pattern += 'at';
             }
             
-            regex += '\\s+';
+            pattern += '\\s+';
             
-            // Team 2 pattern
+            // Team 2
             if (analysis.hasMultiWordTeams) {
-                regex += '(?<team2>.+)';
+                pattern += '(?<team2>[\\w\\s]+)';
             } else {
-                regex += '(?<team2>\\w+)';
+                pattern += '(?<team2>\\w+)';
             }
             
-            regex += '$';
-            
-            return regex;
+            return pattern;
         }
 
-        function displayResults(regex, sample, analysis) {
+        function buildTimePattern(analysis, sample) {
+            // Extract just the time part
+            if (analysis.has24Hour) {
+                // 24-hour format: 13:30
+                return '(?<hour>\\d{1,2}):(?<minute>\\d{2})';
+            } else if (analysis.hasTimeWithColon) {
+                // 12-hour with colon: 7:30pm or 7:30 pm
+                return '(?<hour>\\d{1,2}):(?<minute>\\d{2})\\s*(?<ampm>am|pm)?';
+            } else {
+                // 12-hour without colon: 3pm
+                return '(?<hour>\\d{1,2})(?::(?<minute>\\d{2}))?\\s*(?<ampm>am|pm)';
+            }
+        }
+
+        function buildDatePattern(analysis, sample) {
+            if (analysis.hasMonthName) {
+                // Month name format: December 15, Dec 15, etc.
+                return '(?<month>\\w+)\\s+(?<day>\\d{1,2})(?:\\s+(?<year>\\d{4}))?';
+            } else if (analysis.hasFullDate) {
+                // Numeric format: 10/17/2025
+                return '(?<month>\\d{1,2})/(?<day>\\d{1,2})/(?<year>\\d{2,4})';
+            } else if (analysis.hasDayNumber) {
+                // Just day number: 02
+                return '(?<day>\\d{1,2})';
+            } else {
+                // Default: try to capture month and day
+                return '(?<month>\\w+)?\\s*(?<day>\\d{1,2})';
+            }
+        }
+
+        function displayResults(titlePattern, timePattern, datePattern, sample) {
             const outputSection = document.getElementById('outputSection');
             const titleOutput = document.getElementById('titleOutput');
+            const timeOutput = document.getElementById('timeOutput');
+            const dateOutput = document.getElementById('dateOutput');
             const testResults = document.getElementById('testResults');
             
             // Show output section
             outputSection.classList.remove('hidden');
             
-            // Display regex
-            titleOutput.textContent = regex;
+            // Display patterns
+            titleOutput.textContent = titlePattern;
+            timeOutput.textContent = timePattern;
+            dateOutput.textContent = datePattern;
             
-            // Test the regex
+            // Test the patterns
+            testPatterns(titlePattern, timePattern, datePattern, sample, testResults);
+            
+            // Scroll to results
+            outputSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function testPatterns(titlePattern, timePattern, datePattern, sample, resultsDiv) {
+            let html = '<h5>Test Results:</h5>';
+            let allSuccess = true;
+            
+            // Test title pattern
             try {
-                const pattern = new RegExp(regex, 'i');
-                const match = sample.match(pattern);
+                const titleRegex = new RegExp(titlePattern, 'i');
+                const titleMatch = sample.match(titleRegex);
                 
-                let html = '';
+                if (titleMatch && titleMatch.groups) {
+                    html += '<div class="alert alert-success">✓ Title pattern matched</div>';
+                    html += '<div style="margin-bottom: 15px;">';
+                    Object.entries(titleMatch.groups).forEach(([key, value]) => {
+                        if (value !== undefined && value !== '') {
+                            html += `<div class="result-row">
+                                <div class="result-label">${capitalize(key)}:</div>
+                                <div class="result-value">${escapeHtml(value.trim())}</div>
+                            </div>`;
+                        }
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<div class="alert alert-warning">⚠ Title pattern did not match</div>';
+                    allSuccess = false;
+                }
+            } catch (e) {
+                html += `<div class="alert alert-error">✗ Title pattern error: ${escapeHtml(e.message)}</div>`;
+                allSuccess = false;
+            }
+            
+            // Test time pattern
+            try {
+                const timeRegex = new RegExp(timePattern, 'i');
+                const timeMatch = sample.match(timeRegex);
                 
-                if (match && match.groups) {
-                    html += '<div class="alert alert-success">✓ Regex successfully matches your string!</div>';
-                    
-                    html += '<div class="test-results">';
-                    html += '<h5>Captured Groups:</h5>';
-                    
-                    Object.entries(match.groups).forEach(([key, value]) => {
+                if (timeMatch && timeMatch.groups) {
+                    html += '<div class="alert alert-success">✓ Time pattern matched</div>';
+                    html += '<div style="margin-bottom: 15px;">';
+                    Object.entries(timeMatch.groups).forEach(([key, value]) => {
                         if (value !== undefined && value !== '') {
                             html += `<div class="result-row">
                                 <div class="result-label">${capitalize(key)}:</div>
@@ -507,68 +612,67 @@
                             </div>`;
                         }
                     });
-                    
                     html += '</div>';
                 } else {
-                    html += '<div class="alert alert-error">✗ Regex did not match. Try adjusting your input string.</div>';
+                    html += '<div class="alert alert-info">ℹ Time pattern did not match (this is optional)</div>';
                 }
-                
-                testResults.innerHTML = html;
-                
-                // Scroll to results
-                outputSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                
             } catch (e) {
-                testResults.innerHTML = `<div class="alert alert-error">Error testing regex: ${escapeHtml(e.message)}</div>`;
+                html += `<div class="alert alert-error">✗ Time pattern error: ${escapeHtml(e.message)}</div>`;
             }
+            
+            // Test date pattern
+            try {
+                const dateRegex = new RegExp(datePattern, 'i');
+                const dateMatch = sample.match(dateRegex);
+                
+                if (dateMatch && dateMatch.groups) {
+                    html += '<div class="alert alert-success">✓ Date pattern matched</div>';
+                    html += '<div style="margin-bottom: 15px;">';
+                    Object.entries(dateMatch.groups).forEach(([key, value]) => {
+                        if (value !== undefined && value !== '') {
+                            html += `<div class="result-row">
+                                <div class="result-label">${capitalize(key)}:</div>
+                                <div class="result-value">${escapeHtml(value)}</div>
+                            </div>`;
+                        }
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<div class="alert alert-info">ℹ Date pattern did not match (this is optional)</div>';
+                }
+            } catch (e) {
+                html += `<div class="alert alert-error">✗ Date pattern error: ${escapeHtml(e.message)}</div>`;
+            }
+            
+            resultsDiv.innerHTML = html;
         }
 
-        function testCustomRegex() {
-            const customRegex = document.getElementById('customRegex').value.trim();
+        function testCustomPatterns() {
             const sample = document.getElementById('sampleString').value.trim();
+            const titlePattern = document.getElementById('customTitle').value.trim();
+            const timePattern = document.getElementById('customTime').value.trim();
+            const datePattern = document.getElementById('customDate').value.trim();
             const resultsDiv = document.getElementById('customTestResults');
-            
-            if (!customRegex) {
-                showAlert('Please enter a custom regex pattern.', 'error');
-                return;
-            }
             
             if (!sample) {
                 showAlert('Please enter a sample string to test against.', 'error');
                 return;
             }
             
-            try {
-                const pattern = new RegExp(customRegex, 'i');
-                const match = sample.match(pattern);
-                
-                let html = '<div class="result-item">';
-                html += '<h4>Custom Regex Test Results</h4>';
-                
-                if (match && match.groups) {
-                    html += '<div class="alert alert-success">✓ Your regex matches!</div>';
-                    
-                    Object.entries(match.groups).forEach(([key, value]) => {
-                        if (value !== undefined && value !== '') {
-                            html += `<div class="result-row">
-                                <div class="result-label">${capitalize(key)}:</div>
-                                <div class="result-value">${escapeHtml(value)}</div>
-                            </div>`;
-                        }
-                    });
-                } else {
-                    html += '<div class="alert alert-error">✗ Regex did not match your sample string.</div>';
-                }
-                
-                html += '</div>';
-                
-                resultsDiv.innerHTML = html;
-                resultsDiv.classList.remove('hidden');
-                
-            } catch (e) {
-                resultsDiv.innerHTML = `<div class="alert alert-error">Invalid regex: ${escapeHtml(e.message)}</div>`;
-                resultsDiv.classList.remove('hidden');
+            if (!titlePattern && !timePattern && !datePattern) {
+                showAlert('Please enter at least one pattern to test.', 'error');
+                return;
             }
+            
+            resultsDiv.innerHTML = '<div class="test-results"></div>';
+            testPatterns(
+                titlePattern || '(?<team1>\\w+)',
+                timePattern || '(?<hour>\\d+)',
+                datePattern || '(?<day>\\d+)',
+                sample,
+                resultsDiv.querySelector('.test-results')
+            );
+            resultsDiv.classList.remove('hidden');
         }
 
         function copyToClipboard(elementId) {
@@ -593,7 +697,8 @@
 
         function showAlert(message, type) {
             const alertClass = type === 'error' ? 'alert-error' : 
-                              type === 'info' ? 'alert-info' : 'alert-success';
+                              type === 'info' ? 'alert-info' : 
+                              type === 'warning' ? 'alert-warning' : 'alert-success';
             
             const alert = document.createElement('div');
             alert.className = `alert ${alertClass}`;
